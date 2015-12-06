@@ -3,6 +3,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import json
+import sklearn
 from collections import Counter
 
 with open('data/train.json', 'r') as f:
@@ -24,12 +25,15 @@ def get_info(df, cuisine):
 
     # how many recipes for each cuisine    
     num_recipes = len(df_examine.index)
-    #Counter = Counter()
+    
     all_recipes = df_examine['ingredients'].tolist()
-    all_ingr_flat = [ingr for recipe in all_recipes for ingr in recipe]
-    ingr_rank = Counter[all_ingr_flat]
-    #avg_ingr_recipe = 0    
-    print num_recipes, ingr_rank
+    all_ingr_flat = [ingr.lower() for recipe in all_recipes for ingr in recipe]
+    c = Counter(all_ingr_flat)    
+    ingr_rank = c.most_common(100)
+    
+    print "{} cuisine: {} recipes using {} ingredients.\n\taverage num of ingredients per recipe: {}".format(cuisine, num_recipes, 
+                        len(all_ingr_flat), float(len(all_ingr_flat)/num_recipes))
+    print ingr_rank
 
 for x in cuisines:
     get_info(df, x)
