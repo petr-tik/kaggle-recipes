@@ -70,12 +70,13 @@ count_ingr_ngrams = Counter(all_ingr_ngrams).most_common()
 
 #, 'count in processed', 'delta'
 df_raw = pd.DataFrame.from_records(count_ingr_raw, columns = ['ingredient', 'count in raw'])
-print df_raw[:20]
 
 df_proc = pd.DataFrame.from_records(count_ingr_ngrams, columns = ['ingredient', 'count in processed'])
-print df_proc[:20]
 
-mer_df = pd.merge(df_raw, df_proc, on = 'ingredient', how='inner')
-print mer_df.sort_values(by = 'count in processed', ascending = False)[:100]
+mer_df = pd.merge(df_raw, df_proc, on = 'ingredient', how='outer')
 
+mer_df['absolute difference'] = mer_df['count in processed'] - mer_df['count in raw']
 
+mer_df = mer_df.sort_values(by = 'absolute difference', ascending = False)
+
+mer_df.to_csv('data/raw_vs_proc.csv', encoding = 'utf-8')
