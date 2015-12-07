@@ -37,15 +37,14 @@ here 2 ingredient lists are compared:
 
 """
 
-with open('data/train.json', 'r') as f:
-    train_json = f.read()
-
+ 
 stop = stopwords.words('english') + list(string.punctuation)
 
-trainset = json.loads(train_json)
+# open the train json and read it into a python object
 # read the data in and export the ingredient column into a list
-df = pd.read_json('data/train.json')
-all_recipes = df.ingredients.tolist()
+train_df = pd.read_json('data/train.json')
+
+all_recipes = train_df.ingredients.tolist()
 
 # extract all ingridents from all cuisines into one flat list
 all_ingr_raw = [ingr.lower() for recipe in all_recipes for ingr in recipe]
@@ -67,16 +66,27 @@ all_ingr_ngrams = [ingr for ingr in all_ingr_raw if len(ingr.split()) <= 2] + pr
 count_ingr_raw = Counter(all_ingr_raw).most_common()
 count_ingr_ngrams = Counter(all_ingr_ngrams).most_common()
 
+# Daraframe from the list of counter tuples for raw ingredient data
+df_raw = pd.DataFrame.from_records(count_ingr_raw, 
+                                    columns = ['ingredient', 'count in raw'])
 
-#, 'count in processed', 'delta'
-df_raw = pd.DataFrame.from_records(count_ingr_raw, columns = ['ingredient', 'count in raw'])
+# dataframe from the list of counter tuples from processed data
+df_proc = pd.DataFrame.from_records(count_ingr_ngrams, 
+                                   columns = ['ingredient', 'count in processed'])
 
-df_proc = pd.DataFrame.from_records(count_ingr_ngrams, columns = ['ingredient', 'count in processed'])
-
-mer_df = pd.merge(df_raw, df_proc, on = 'ingredient', how='outer')
+mer_df = pd.merge(df_raw, df_proc, on = 'ingredient', how = 'outer')
 
 mer_df['absolute difference'] = mer_df['count in processed'] - mer_df['count in raw']
+mer_df['percentage difference'] = (mer_df['absolute difference']/mer_df['count in raw'])*100
 
-mer_df = mer_df.sort_values(by = 'absolute difference', ascending = False)
+for difference in ['absolute difference', 'percentage difference']:
+    print "\n\n\nSorted by {}".format(difference)
+    print mer_df.sort_values(by = difference, ascending = False)
 
-mer_df.to_csv('data/raw_vs_proc.csv', encoding = 'utf-8')
+# save to csv
+mer_df.to_csv('data/raw_vs_proc.csv', encoding = 'utf-8', index = False, 
+                    na_rep = 'missing')
+
+
+
+
