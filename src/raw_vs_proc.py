@@ -12,8 +12,6 @@ from nltk.util import ngrams
 from collections import Counter
 from collections import OrderedDict
 
-
-
 """
 if raw strings are counted separately 'ground black pepper' and 'black pepper' 
 will have different counts and it won't correctly represent 
@@ -36,7 +34,6 @@ here 2 ingredient lists are compared:
 
 
 """
-
  
 stop = stopwords.words('english') + list(string.punctuation)
 
