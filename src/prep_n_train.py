@@ -5,12 +5,13 @@ import sklearn
 import json
 import pandas as pd
 import string
+import numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.util import ngrams
 from collections import Counter
 from collections import OrderedDict
-from sklearn.feature_extraction import text
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 """
 create a model function that takes a training set of the appropriate form and
@@ -28,5 +29,13 @@ test and produce a results table.
 
 """
 
+train_df = df.read_json('data/train.json')
+vectorizer = CountVectorizer(analyzer = 'word')
+vectorizer.fit()
 
 
+x_train 
+
+
+# make an array of train target variables
+y_train = np.array(train_df['cuisine'])
