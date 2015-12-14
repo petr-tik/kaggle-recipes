@@ -30,6 +30,11 @@ test and produce a results table.
 """
 
 train_df = df.read_json('data/train.json')
+
+
+
+"""
+
 vectorizer = CountVectorizer(analyzer = 'word')
 vectorizer.fit()
 
@@ -39,3 +44,5 @@ x_train
 
 # make an array of train target variables
 y_train = np.array(train_df['cuisine'])
+
+"""
