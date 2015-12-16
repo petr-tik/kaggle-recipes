@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 
 
 import nltk
@@ -41,61 +41,40 @@ stop = stopwords.words('english') + list(string.punctuation)
 # read the data in and export the ingredient column into a list
 train_df = pd.read_json('data/train.json')
 
-print train_df.ingredients[:20]
+# either do with pd.option_context(string_value, int): ...
+# or to_string, which sorts printing in the terminal out
 
-ne = ["lads lads2 lads3 lads4 lads5", 'random strings from words', 'weird stuff']
+print "\n\n", train_df.ix[18:25].to_string(index = False), "\n\n"
+
 
 # function that takes a string phrase, checks how many words
 # if 3 or more, make bigrams out of it and append 
-def long_to_ngram(string):
-    ## take a string of >2 words and turn it into bigram strings
-    if len(string.split()) <= 2:
-        # don't do anything with strings with 2 spaces or fewer
-        return string
-         
-    elif len(string.split()) >= 3:
-        # make ngrams - list of tuples
-        ngrs = list(ngrams(string.split(), 2))
-        # turn into list of strings
-        strings = [' '.join(pair) for pair in ngrs]
-        
-        return strings         
+       
 
-def complex_string(string):
-    if len(string.split()) <= 2:
-        return False
-    elif len(string.split()) >= 3:
-        return True
- 
-def simple(string):
-    if len(string.split()) <= 2:
-        return True
-    elif len(string.split()) >= 3:
-        return False
 
 def process(list_of_ingrs):
-    ## take a list of ingrs and return the same list where all >2 word ingrs 
+    ## take a list of ingrs and 
+    ## return the a flat list where all >2 word ingrs 
     ## are converted into bigrams   
-    
-    up_to_three = filter(simple, list_of_ingrs) 
-    three_or_more = filter(complex_string, list_of_ingrs)
-    print up_to_three
-    print three_or_more    
+    processed = []    
+    for each_ingr in list_of_ingrs:
+        if len(each_ingr.split()) <= 2:
+            print "This is a simple ingredient string and it needs no processing", each_ingr 
+            processed.append(each_ingr)
+
+        elif len(each_ingr.split()) >= 3:
+            print "{} is too long, starting to process it".format(each_ingr)
+            # make ngrams - list of tuples
+            ngrs = list(ngrams(each_ingr.split(), 2))
+            print "This is the list of bigrams", ngrs
+            # turn into list of strings
+            strings = [' '.join(pair) for pair in ngrs]
+            processed.extend(strings)
+
+    return processed
 
 
-    return 
-
-#    new_list = [long_to_ngram(ingr) for ingr in list_of_ingrs]
-#    flat_list = [item for sublist in new_list for item in sublist if type(sublist) == list]
- #   print "Given the list of ingrs:", list_of_ingrs
-  #  print "This is our list of ingredient bigrams", new_list
-   # print flat_list
-
-print process(ne)
-
-
-"""
 train_df['ingredients processed'] = map(process, train_df['ingredients'])
 train_df.to_csv('data/raw_vs_proc_analysis.csv')
 
-"""
+
