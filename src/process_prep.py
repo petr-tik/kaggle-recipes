@@ -1,11 +1,11 @@
  #!/usr/bin/env python
 
-
 import nltk
 import sklearn
 import json
 import pandas as pd
 import string
+import re
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.util import ngrams
@@ -35,10 +35,8 @@ here 2 ingredient lists are compared:
 
 """
  
-stop = stopwords.words('english') + list(string.punctuation)
 
 # open the train json and read it into a python object
-# read the data in and export the ingredient column into a list
 train_df = pd.read_json('data/train.json')
 
 # either do with pd.option_context(string_value, int): ...
@@ -46,24 +44,31 @@ train_df = pd.read_json('data/train.json')
 
 print "\n\n", train_df.ix[18:25].to_string(index = False), "\n\n"
 
-
-# function that takes a string phrase, checks how many words
-# if 3 or more, make bigrams out of it and append 
+# takes a a list of ingredient strings, 
+# returns a list of lowercase, alphanumeric only strings with bigrams for all
+# strings with more than 2 words 
        
-
-
 def process(list_of_ingrs):
     ## take a list of ingrs and 
     ## return the a flat list where all >2 word ingrs 
     ## are converted into bigrams   
     processed = []    
     for each_ingr in list_of_ingrs:
+        #  match a regexp pattern getting rid of copyright, trademark chars   
+        print re.findall('\w+\w?', each_ingr)        
+        # each_ingr = re.compile()        
+        
+        # lowercase each string
+        # each_ingr = each_ingr.lower()
         if len(each_ingr.split()) <= 2:
-            print "This is a simple ingredient string and it needs no processing", each_ingr 
+            print "{} \nis a simple ingredient string and it needs no bigramising".format(each_ingr)
+            
+            
+
             processed.append(each_ingr)
 
         elif len(each_ingr.split()) >= 3:
-            print "{} is too long, starting to process it".format(each_ingr)
+            print "{} \n\t\tis too long\n...\nstarting to process it".format(each_ingr)
             # make ngrams - list of tuples
             ngrs = list(ngrams(each_ingr.split(), 2))
             print "This is the list of bigrams", ngrs
@@ -74,7 +79,6 @@ def process(list_of_ingrs):
     return processed
 
 
-train_df['ingredients processed'] = map(process, train_df['ingredients'])
-train_df.to_csv('data/raw_vs_proc_analysis.csv')
-
+train_df['ingredients bigramised'] = map(process, train_df['ingredients'])
+print train_df[:30]
 
